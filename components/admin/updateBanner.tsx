@@ -1,4 +1,3 @@
-'use client';
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 
@@ -23,52 +22,44 @@ const UpdateBanner: React.FC<Props> = ({ isOpen, onRequestClose, bannerIdToUpdat
   const [title, setTitle] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [bannerData, setBannerData] = useState<{ title: string; imageUrl: string } | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (bannerIdToUpdate) {
-      // Fetch banner data based on bannerIdToUpdate
-      // You need to implement this part to fetch banner data from your API
-      // Once you have the banner data, set it into the state
-      // Example:
-      // setBannerData({ title: "Banner Title", imageUrl: "Banner Image URL" });
-    }
-  }, [bannerIdToUpdate]);
+    // Dapat dilakukan inisialisasi state atau pengambilan data terkait bannerIdToUpdate di sini
+  }, [isOpen]); // Memastikan efek hanya dijalankan saat komponen dibuka
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
+    setError("");
+
     try {
-      // Make an API call to update the banner
-      // You need to implement this part to update the banner data using your API
-      // Example:
-      // await fetch(`your_api_endpoint/${bannerIdToUpdate}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ title, imageUrl }),
-      // });
-      // Show success message after successful update
-      console.log("Banner updated successfully!");
+      // Kirim permintaan ke backend untuk mengupdate banner
+      const response = await fetch(`https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-category/${bannerIdToUpdate}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          // Pastikan Anda mengganti 'token' dengan header autentikasi yang sesuai
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({ title, imageUrl })
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal mengupdate banner.");
+      }
+
+      // Jika berhasil, Anda dapat menambahkan logika lain, seperti menampilkan pesan sukses
+      console.log("Banner berhasil diupdate.");
+
+      // Tutup modal setelah berhasil update
+      onRequestClose();
     } catch (error) {
-      console.error("Error updating banner:", error);
-      // Handle error scenario
+      setError( "Terjadi kesalahan.");
     } finally {
       setIsLoading(false);
-      onRequestClose(); // Close the modal
     }
   };
-
-  useEffect(() => {
-    // If banner data is available, set the title and imageUrl
-    if (bannerData) {
-      setTitle(bannerData.title);
-      setImageUrl(bannerData.imageUrl);
-    }
-  }, [bannerData]);
-
-  const isFormValid = title.trim() !== "" && imageUrl.trim() !== "";
 
   return (
     <Modal
@@ -79,9 +70,10 @@ const UpdateBanner: React.FC<Props> = ({ isOpen, onRequestClose, bannerIdToUpdat
     >
       <h2 className="text-2xl mb-4">Update Banner</h2>
       <form onSubmit={handleSubmit}>
+        {error && <div className="text-red-500 mb-2">{error}</div>}
         <div className="mb-4">
           <label htmlFor="title" className="block text-gray-700">
-            Title:
+            Title: 
           </label>
           <input
             type="text"
@@ -89,6 +81,7 @@ const UpdateBanner: React.FC<Props> = ({ isOpen, onRequestClose, bannerIdToUpdat
             name="title"
             required
             value={title}
+            placeholder={title}
             onChange={(e) => setTitle(e.target.value)}
             className="border border-gray-300 rounded-md p-2 w-full"
           />
@@ -104,6 +97,7 @@ const UpdateBanner: React.FC<Props> = ({ isOpen, onRequestClose, bannerIdToUpdat
             required
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
+            
             className="border border-gray-300 rounded-md p-2 w-full"
           />
         </div>

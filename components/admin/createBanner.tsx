@@ -52,6 +52,7 @@ const AddBannerModal: React.FC<Props> = ({ isOpen, onRequestClose }) => {
           method: "POST",
           headers: {
             Authorization: `Bearer ${localStorageToken}`,
+            "Content-Type": "application/json",
             apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
           },
           body: formData,

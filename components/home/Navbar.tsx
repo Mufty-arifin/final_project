@@ -4,13 +4,31 @@ import React, { useState } from "react";
 import { Nav_LINKS } from "../../constant";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import Logout from "../Logout";
-
+import { signOut, useSession } from "next-auth/react";
+import Swal from "sweetalert2";
 export default function Navbar() {
   const [menuOpened, setMenuOpened] = useState(false);
   const toggleMenu = () => setMenuOpened(!menuOpened);
   const Token = localStorage.getItem("token");
   const pathname = usePathname();
+  const { data: session } = useSession();
+
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, log me out!",
+      cancelButtonText: "No, cancel",
+    });
+
+    // If the user confirms, sign them out
+    if (result.isConfirmed) {
+      await signOut({ redirect: false, callbackUrl: "/login" });
+    }
+  };
+
   return (
     <nav className="flexBetween max-counter px-12 z-30 py-2 shadow-xl bg-white rounded-full ring-slate-100 fixed w-[95%] left-[50%] top-1 translate-x-[-50%]">
       <Link href="/" className="bold-20">
@@ -40,8 +58,15 @@ export default function Navbar() {
         ))}
       </ul>
       <div className="hidden lg:block">
-        {Token ? ( // Jika token ada, tampilkan tombol logout
-          <Logout />
+        {session ? ( // Jika token ada, tampilkan tombol logout
+          <button
+            onClick={handleLogout}
+            className="flexCenter gap-2 border rounded-full btn_dark_rounded"
+          >
+            <label className="whitespace-nowrap cursor-pointer bold-16">
+              Logout
+            </label>
+          </button>
         ) : (
           // Jika tidak, tampilkan tombol login
           <Link href="/login">
@@ -100,18 +125,13 @@ export default function Navbar() {
             ></span>
           </Link>
         ))}
-        {Token ? ( // Jika token ada, tampilkan tombol logout
-          <Logout />
-        ) : (
-          // Jika tidak, tampilkan tombol login
-          <Link href="/login">
-            <button className="flexCenter gap-2 border rounded-full btn_dark_rounded">
-              <label className="whitespace-nowrap cursor-pointer bold-16">
-                Login
-              </label>
-            </button>
-          </Link>
-        )}
+        <Link href="/login">
+          <button className="flexCenter gap-2 border rounded-full btn_dark_rounded">
+            <label className="whitespace-nowrap cursor-pointer bold-16">
+              Login
+            </label>
+          </button>
+        </Link>
       </ul>
     </nav>
   );

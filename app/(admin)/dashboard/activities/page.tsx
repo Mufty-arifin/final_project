@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "@/components/admin/Navbar";
 import CreateActivity from "@/components/admin/createActivity";
 import Swal from "sweetalert2";
+import DeleteActivity from "./deleteActivity";
 
 const page = () => {
   const [activities, setActivities] = useState([]);
@@ -173,12 +174,7 @@ const page = () => {
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                       Update
                     </button>
-                    <button
-                      onClick={() => deleteActivity(activity.id)}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                      Delete
-                    </button>
+                   <DeleteActivity activity={activity.id}/>
                   </td>
                 </tr>
               ))}

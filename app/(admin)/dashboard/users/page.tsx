@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/admin/Navbar";
-import Swal from "sweetalert2";
+import UpdateRole from "./updateRole";
 
 interface User {
   id: string;
@@ -17,7 +17,7 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10); // Number of users to display per page
   const [searchKeyword, setSearchKeyword] = useState("");
-  const localStotrageToken = localStorage.getItem("token");
+ 
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -26,7 +26,7 @@ const Page = () => {
           `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/all-user?page=${currentPage}&limit=${usersPerPage}`,
           {
             headers: {
-              Authorization: `Bearer ${localStotrageToken}`,
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pZnRhaGZhcmhhbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI5NWE4MDNjMy1iNTFlLTQ3YTAtOTBkYi0yYzJmM2Y0ODE1YTkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2Nzk4NDM0NDR9.ETsN6dCiC7isPReiQyHCQxya7wzj05wz5zruiFXLx0k`,
               apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
               "Content-Type": "application/json",
             },
@@ -40,61 +40,7 @@ const Page = () => {
     };
 
     fetchUsers();
-  }, [currentPage, usersPerPage, localStotrageToken]);
-
-  const deleteUser = async (userId: string) => {
-    // Show confirmation dialog before deleting the user
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          // Send a request to the server to delete the user with the specified userId
-          await fetch(
-            `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-user/${userId}`,
-            {
-              method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${localStotrageToken}`,
-                apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          // Update the state to reflect the deletion
-          setUsers(users.filter((user) => user.id !== userId));
-          // Update local storage after deletion
-          localStorage.setItem(
-            "users",
-            JSON.stringify(users.filter((user) => user.id !== userId))
-          );
-
-          // Show success message after successful deletion
-          Swal.fire({
-            title: "Deleted!",
-            text: "Your file has been deleted.",
-            icon: "success",
-          });
-        } catch (error) {
-          console.error("Error deleting user:", error);
-          // Handle any errors that may occur during the deletion process
-          Swal.fire({
-            title: "Error",
-            text: "An error occurred while deleting the user.",
-            icon: "error",
-          });
-        }
-      }
-    });
-  };
-
+  }, [currentPage, usersPerPage, searchKeyword]);
   // Logic for displaying current users
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -175,15 +121,7 @@ const Page = () => {
                     {user.phoneNumber}
                   </td>
                   <td className="border border-gray-300 px-2 py-1">
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                      Update
-                    </button>
-                    <button
-                      onClick={() => deleteUser(user.id)}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                      Delete
-                    </button>
+                  <UpdateRole user={user.id} />
                   </td>
                 </tr>
               ))}

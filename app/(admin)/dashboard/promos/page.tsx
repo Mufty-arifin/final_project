@@ -2,6 +2,7 @@
 import Navbar from "@/components/admin/Navbar";
 import Swal from "sweetalert2";
 import React, { useEffect, useState } from "react";
+import DeletePromo from "./deletePromo";
 
 interface Promo {
   id: string;
@@ -20,7 +21,6 @@ const Page = () => {
   const [promos, setPromos] = useState<Promo[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [promosPerPage] = useState(8); // Number of users to display per page
-  const localStotrageToken = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchPromos = async () => {
@@ -29,7 +29,6 @@ const Page = () => {
           `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/promos?page=${currentPage}&limit=${promosPerPage}`,
           {
             headers: {
-              Authorization: `Bearer ${localStotrageToken}`,
               apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
               "Content-Type": "application/json",
             },
@@ -43,7 +42,7 @@ const Page = () => {
     };
 
     fetchPromos();
-  }, [currentPage, promosPerPage, localStotrageToken]);
+  }, [currentPage, promosPerPage]);
   
   const deletePromo = async (promoId: string) => {
     // Show confirmation dialog before deleting the banner
@@ -64,7 +63,6 @@ const Page = () => {
             {
               method: "DELETE",
               headers: {
-                Authorization: `Bearer ${localStotrageToken}`,
                 apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
                 "Content-Type": "application/json",
               },
@@ -178,9 +176,7 @@ const Page = () => {
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                       Update
                     </button>
-                    <button  onClick={() => deletePromo(promo.id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                      Delete
-                    </button>
+                   <DeletePromo promo={promo}/>
                   </td>
                 </tr>
               ))}
