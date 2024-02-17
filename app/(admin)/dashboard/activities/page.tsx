@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Navbar from "@/components/admin/Navbar";
-import CreateActivity from "@/components/admin/createActivity";
 import Swal from "sweetalert2";
 import DeleteActivity from "./deleteActivity";
 
@@ -34,56 +33,6 @@ const page = () => {
 
     fetchActivities();
   }, [currentPage, activitiesPerPage, localStorageToken]);
-
-  const deleteActivity = async (activityId: string) => {
-    // Show confirmation dialog before deleting the category
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          // Send a request to the server to delete the category with the specified categoryId
-          await fetch(
-            `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-activity/${activityId}`,
-            {
-              method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${localStorageToken}`,
-                apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          // Update the state to reflect the deletion
-          setActivities(
-            activities.filter((activity: any) => activity.id !== activityId)
-          );
-
-          // Show success message after successful deletion
-          Swal.fire({
-            title: "Deleted!",
-            text: "Your category has been deleted.",
-            icon: "success",
-          });
-        } catch (error) {
-          console.error("Error deleting category:", error);
-          // Handle any errors that may occur during the deletion process
-          Swal.fire({
-            title: "Error",
-            text: "An error occurred while deleting the category.",
-            icon: "error",
-          });
-        }
-      }
-    });
-  };
 
   // Logic for displaying current users
   const indexOfLastActivitie = currentPage * activitiesPerPage;
@@ -182,10 +131,7 @@ const page = () => {
           </table>
         </div>
       </div>
-      <CreateActivity
-        isOpen={modalIsOpen}
-        onRequestClose={() => setIsOpen(false)}
-      />
+    
     </>
   );
 };
